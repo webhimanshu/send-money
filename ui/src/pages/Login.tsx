@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { toast } from "react-toastify";
 
 interface LoginFormData {
   email: string;
@@ -21,10 +22,29 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Just navigate to dashboard - no API calls
-    navigate("/dashboard");
+    try {
+      const response = await fetch("http://localhost:4000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+      if (data.success) {
+        localStorage.setItem("token", data.data.token);
+        toast.success("Login successful, redirecting to dashboard");
+        navigate("/dashboard");
+      } else {
+        console.log(data.message);
+        toast.error(data.message || "Something went wrong, please try again");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong, please try again");
+    }
   };
 
   return (

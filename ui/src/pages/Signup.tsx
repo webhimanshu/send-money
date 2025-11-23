@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { toast } from "react-toastify";
 
 interface SignupFormData {
   firstName: string;
@@ -25,10 +26,28 @@ export default function Signup() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Just navigate to dashboard - no API calls
-    navigate("/dashboard");
+    try {
+      const response = await fetch("http://localhost:4000/api/auth/signup", {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {  
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Account created successfully, please login to continue");
+        navigate("/login");
+      } else {
+        console.log(data.message);
+        toast.error("Something went wrong, please try again");
+      }
+    } catch (error) {
+      toast.error("An error occurred, please try again");
+      console.error(error);
+    }
   };
 
   return (
@@ -100,7 +119,7 @@ export default function Signup() {
 
               <button
                 type="submit"
-                className="w-full bg-blue-900 hover:bg-blue-950 text-white font-semibold py-3 px-4 mt-8 rounded-lg transition-colors duration-200"
+                className="w-full cursor-pointer bg-blue-900 hover:bg-blue-950 text-white font-semibold py-3 px-4 mt-8 rounded-lg transition-colors duration-200"
               >
                 SignUp
               </button>

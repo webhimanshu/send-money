@@ -11,6 +11,11 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
+  const token = localStorage.getItem("token");
+  if (!token) {
+    navigate("/login");
+  }
+
   // Hardcoded user data
   const user = {
     firstName: "User",
