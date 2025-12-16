@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
+import { toast } from "react-toastify";
 
 interface Contact {
   id: string;
@@ -10,7 +12,7 @@ interface Contact {
 export default function Dashboard() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-
+  const auth = useAuth();
   const token = localStorage.getItem("token");
   if (!token) {
     navigate("/login");
@@ -38,7 +40,9 @@ export default function Dashboard() {
   );
 
   const handleLogout = () => {
+    auth.logout();
     navigate("/login");
+    toast.success("Logged out successfully");
   };
 
   return (

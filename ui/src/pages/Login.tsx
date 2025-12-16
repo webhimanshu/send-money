@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/AuthProvider";
 
 interface LoginFormData {
   email: string;
@@ -10,6 +11,7 @@ interface LoginFormData {
 
 export default function Login() {
   const navigate = useNavigate();
+  const auth = useAuth();
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -34,7 +36,12 @@ export default function Login() {
       });
       const data = await response.json();
       if (data.success) {
-        localStorage.setItem("token", data.data.token);
+        const user = {
+          firstName: data.data.user.firstName,
+          lastName: data.data.user.lastName,
+          email: data.data.user.email
+        }
+        auth.login(data.data.token, user)
         toast.success("Login successful, redirecting to dashboard");
         navigate("/dashboard");
       } else {
