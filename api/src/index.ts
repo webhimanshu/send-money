@@ -2,6 +2,8 @@ import { AppDataSource } from "./data-source";
 import express from "express";
 import authRoutes from "./routes/auth.routes";
 import transferRoutes from "./routes/transfer.routes";
+import userRoutes from "./routes/user.routes";
+
 import cors from "cors";
 const app = express();
 app.use(express.json());
@@ -14,6 +16,7 @@ AppDataSource.initialize()
     console.log("DataSource initialized");
     app.use("/api/auth", authRoutes);
     app.use("/api/transfer", transferRoutes);
+    app.use("/api/user", userRoutes);
     
     const PORT = process.env.PORT || 4000;
 
