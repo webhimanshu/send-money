@@ -68,6 +68,9 @@ export default function SendMoney() {
       return;
     }
 
+    // Convert amount to paise (multiply by 100 and convert to string of digits)
+    // const amountInPaise = Math.round(parseFloat(amount) * 100).toString();
+
     setLoading(true);
     try {
       const response = await fetch('http://localhost:4000/api/transfer', {
@@ -83,16 +86,15 @@ export default function SendMoney() {
       });
 
       const data = await response.json();
-
       if (response.ok && data.success) {
         toast.success(`Successfully sent ₹${amount} to ${contact.firstName} ${contact.lastName}`);
         navigate("/dashboard");
       } else {
-        toast.error(data.message || "Transfer failed. Please try again.");
+        throw new Error(data.message[0] || "Transfer failed. Please try again.");
       }
     } catch (error) {
       console.error("Failed to send money:", error);
-      toast.error("Network error. Please try again.");
+      toast.error((error as Error).message || "Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -178,7 +180,7 @@ export default function SendMoney() {
             </button>
             <button
               type="submit"
-              disabled={loading || !amount || parseFloat(amount) <= 0 || (balance !== null && parseFloat(amount) > balance)}
+              disabled={loading || !amount}
               className="flex-1 bg-blue-900 hover:bg-blue-950 text-white font-semibold px-6 py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Sending..." : "Send Money"}
